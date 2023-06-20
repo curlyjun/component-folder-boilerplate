@@ -15,8 +15,7 @@
     "commands": [
       {
         "command": "component-folder-boilerplate.init",
-        "title": "New folder with component structure",
-        "when": "explorerResourceIsFolder"
+        "title": "New folder with component structure"
       }
     ],
     "menus": {
