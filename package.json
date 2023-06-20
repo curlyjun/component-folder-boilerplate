@@ -14,10 +14,20 @@
   "contributes": {
     "commands": [
       {
-        "command": "component-folder-boilerplate.helloWorld",
-        "title": "Hello World"
+        "command": "component-folder-boilerplate.init",
+        "title": "New folder with component structure",
+        "when": "explorerResourceIsFolder"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "component-folder-boilerplate.init",
+          "group": "navigation@10",
+          "when": "explorerResourceIsFolder"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",
