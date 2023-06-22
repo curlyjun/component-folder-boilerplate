@@ -1,8 +1,10 @@
 {
   "name": "component-folder-boilerplate",
-  "displayName": "component-folder-boilerplate",
+  "displayName": "리액트 컴포넌트 폴더 구조 생성기",
   "description": "Create your component folder structure",
   "version": "0.0.1",
+  "publisher": "curlyjun",
+  "icon": "pizza.png",
   "engines": {
     "vscode": "^1.79.0"
   },
@@ -15,7 +17,7 @@
     "commands": [
       {
         "command": "component-folder-boilerplate.init",
-        "title": "컴포넌트 추가🍕"
+        "title": "리액트 컴포넌트 추가🍕"
       }
     ],
     "menus": {
@@ -54,5 +56,12 @@
     "webpack": "^5.85.0",
     "webpack-cli": "^5.1.1",
     "@vscode/test-electron": "^2.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/curlyjun/component-folder-boilerplate"
+  },
+  "bugs": {
+    "url": "https://github.com/curlyjun/component-folder-boilerplate/issues"
   }
 }
