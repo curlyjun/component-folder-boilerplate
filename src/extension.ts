@@ -1,15 +1,51 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import path = require("path");
 import * as vscode from "vscode";
 
 const files = [
   {
     name: "index.ts",
-    body: `
-		export { default as {{Component}} } from './{{Component}}';
-		`,
+    body: ["export { default as {{Component}} } from './{{Component}}';"],
     selected: true,
+  },
+  {
+    name: `{{Component}}.tsx`,
+    body: [
+      "import { {{Component}}Props } from './{{Component}}.types';",
+      "import * as S from './{{Component}}.styled';",
+      "",
+      "const {{Component}} = (props: {{Component}}Props) => {",
+      "  return <S.{{Component}}></S.{{Component}}>;",
+      "};",
+      "",
+      "export default {{Component}};",
+    ],
+    selected: true,
+  },
+  {
+    name: `{{Component}}.styled.ts`,
+    body: [
+      "import styled from 'styled-components';",
+      "",
+      "export const {{Component}} = styled.div``;",
+    ],
+    selected: true,
+  },
+  {
+    name: `{{Component}}.types.ts`,
+    body: ["export interface {{Component}}Props {}"],
+    selected: true,
+  },
+  {
+    name: `{{Component}}.utils.ts`,
+    body: [""],
+    selected: true,
+    optional: true,
+  },
+  {
+    name: `{{Component}}.constants.ts`,
+    body: [""],
+    selected: true,
+    optional: true,
   },
 ];
 
@@ -32,18 +68,7 @@ function getParentDirectoryUri(uri: vscode.Uri) {
   return vscode.Uri.file(parentFolderPath);
 }
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log(
-    'Congratulations, your extension "component-folder-boilerplate" is now active!'
-  );
-
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
   let disposable = vscode.commands.registerCommand(
     "component-folder-boilerplate.init",
     async (resource: vscode.Uri) => {
@@ -55,52 +80,63 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      // console.log(
-      //   "설정",
-      //   vscode.workspace.getConfiguration().get("hello.index")
-      // );
-
       // 컴포넌트명 입력받기
       const componentName = await vscode.window.showInputBox({
-        placeHolder: "Input your component name",
+        title: "🍕 컴포넌트명을 입력하세요 🍕",
       });
 
-      // 생성할 파일 선택
-      const fileList = await vscode.window.showQuickPick(
-        [
-          { label: `index.ts`, picked: true },
-          { label: `${componentName}.styled.ts`, picked: true },
-          { label: `${componentName}.types.ts`, picked: true },
-          { label: `${componentName}.utils.ts`, picked: true },
-          { label: `${componentName}.constants.ts`, picked: true },
-        ],
-        {
-          canPickMany: true,
-          placeHolder: "Select the files you want to create",
+      if (!componentName) {
+        vscode.window.showErrorMessage("🥒 컴포넌트명을 입력해야됩니다. 🥒");
+        return;
+      }
+
+      const qp = vscode.window.createQuickPick();
+      qp.canSelectMany = true;
+      qp.title = "🍕 추가로 필요한 파일을 선택해주세요. 🍕";
+      qp.items = files
+        .filter((file) => file.optional)
+        .map((file) => {
+          return {
+            label: file.name.replace(/{{Component}}/g, componentName),
+            picked: file.selected,
+          };
+        });
+
+      qp.show();
+
+      qp.onDidAccept(async () => {
+        const requiredFiles = files.filter((file) => !file.optional);
+        for (let file of requiredFiles) {
+          const fileName = file.name.replace(/{{Component}}/g, componentName);
+          const fileUri = vscode.Uri.joinPath(uri, componentName, fileName);
+          const fileBody = file.body
+            .join("\n")
+            .replace(/{{Component}}/g, componentName);
+          const fileData = new Uint8Array(Buffer.from(fileBody));
+
+          await vscode.workspace.fs.writeFile(fileUri, fileData);
         }
-      );
 
-      // TODO: 설정 값에 따라 파일 생성 지금은 하드 코딩 (가능할지 모르겠음 - 파일 선택 여부에 따라 import가 달라지고 해야해서)
-      files.forEach((file) => {
-        file.body = file.body.replace(/{{Component}}/g, componentName || "");
-        const fileUri = vscode.Uri.joinPath(
-          uri,
-          componentName || "",
-          file.name
-        );
-        const fileData = new Uint8Array(Buffer.from(file.body));
+        const selectedItemLabel = qp.selectedItems.map((item) => item.label);
 
-        vscode.workspace.fs.writeFile(fileUri, fileData);
-        // vscode.window.showInformationMessage("파일 생성 완료");
+        for (let label of selectedItemLabel) {
+          const file: any = files.find(
+            (file) =>
+              file.name === label.replace(componentName, "{{Component}}")
+          );
+          const fileUrl = vscode.Uri.joinPath(uri, componentName, label);
+          const fileBody = file?.body
+            .join("\n")
+            .replace(/{{Component}}/g, componentName);
+          const fileData = new Uint8Array(Buffer.from(fileBody ?? ""));
+
+          await vscode.workspace.fs.writeFile(fileUrl, fileData);
+        }
+
+        qp.dispose();
+
+        await vscode.window.showInformationMessage("🥒 컴포넌트 생성 완료 🥒");
       });
-
-      // TODO: 선택한 것들에 따라 파일 다르게 생성
-
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
-      // vscode.window.showInformationMessage(
-      //   "Hello World from component-folder-boilerplate!"
-      // );
     }
   );
 
