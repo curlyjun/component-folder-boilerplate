@@ -10,14 +10,15 @@ const files = [
   {
     name: `{{Component}}.tsx`,
     body: [
-      "import { {{Component}}Props } from './{{Component}}.types';",
       "import * as S from './{{Component}}.styled';",
+      "import { {{Component}}Props } from './{{Component}}.types';",
       "",
-      "const {{Component}} = (props: {{Component}}Props) => {",
-      "  return <S.{{Component}}></S.{{Component}}>;",
+      "const {{Component}} = ({ children }: {{Component}}Props) => {",
+      "  return <S.{{Component}}>{children}</S.{{Component}}>;",
       "};",
       "",
       "export default {{Component}};",
+      "",
     ],
     selected: true,
   },
@@ -27,12 +28,17 @@ const files = [
       "import styled from 'styled-components';",
       "",
       "export const {{Component}} = styled.div``;",
+      "",
     ],
     selected: true,
   },
   {
     name: `{{Component}}.types.ts`,
-    body: ["export interface {{Component}}Props {}"],
+    body: [
+      "export interface {{Component}}Props {",
+      "  children: React.ReactNode;",
+      "};",
+    ],
     selected: true,
   },
   {
@@ -82,11 +88,11 @@ export function activate(context: vscode.ExtensionContext) {
 
       // 컴포넌트명 입력받기
       const componentName = await vscode.window.showInputBox({
-        title: "🍕 컴포넌트명을 입력하세요 🍕",
+        title: "컴포넌트명을 입력하세요 🍕",
       });
 
       if (!componentName) {
-        vscode.window.showErrorMessage("🥒 컴포넌트명을 입력해야됩니다. 🥒");
+        vscode.window.showErrorMessage("컴포넌트명을 입력해야됩니다. 🥒");
         return;
       }
 
@@ -135,7 +141,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         qp.dispose();
 
-        await vscode.window.showInformationMessage("🥒 컴포넌트 생성 완료 🥒");
+        await vscode.window.showInformationMessage("컴포넌트 생성 완료 🥒");
       });
     }
   );
