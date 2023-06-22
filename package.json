@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "component-folder-boilerplate.init",
-        "title": "New folder with component structure"
+        "title": "컴포넌트 추가🍕"
       }
     ],
     "menus": {
