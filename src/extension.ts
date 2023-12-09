@@ -83,7 +83,7 @@ const cssModuleFiles = [
   {
     name: `{{Component}}.module.scss`,
     body: [
-      "@import '../../styles/mixin';",
+      "@import '../../styles/mixins';",
       "",
       ".wrapper {",
       "  @include container-spacing('fl','m');",

@@ -2,7 +2,7 @@
   "name": "component-folder-boilerplate",
   "displayName": "리액트 컴포넌트 폴더 구조 생성기",
   "description": "Create your component folder structure",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "publisher": "curlyjun",
   "icon": "pizza.png",
   "engines": {
