@@ -1,7 +1,7 @@
 import path = require("path");
 import * as vscode from "vscode";
 
-const files = [
+const styledComponentsFiles = [
   {
     name: "index.ts",
     body: ["export { default as {{Component}} } from './{{Component}}';"],
@@ -55,6 +55,60 @@ const files = [
   },
 ];
 
+const cssModuleFiles = [
+  {
+    name: "index.ts",
+    body: ["export { default as {{Component}} } from './{{Component}}';"],
+    selected: true,
+  },
+  {
+    name: `{{Component}}.tsx`,
+    body: [
+      "import classNames from 'classnames/bind';",
+      "",
+      "import { {{Component}}Props } from './{{Component}}.types';",
+      "import styles from './{{Component}}.module.scss';",
+      "",
+      "const {{Component}} = ({}: {{Component}}Props) => {",
+      "  return <div className={cx('wrapper')}></div>;",
+      "};",
+      "",
+      "export default {{Component}};",
+      "",
+    ],
+    selected: true,
+  },
+  {
+    name: `{{Component}}.module.scss`,
+    body: [
+      "@import '../../styles/mixin';",
+      "",
+      ".wrapper {",
+      "  @include container-spacing('fl','m');",
+      "}",
+      "",
+    ],
+    selected: true,
+  },
+  {
+    name: `{{Component}}.types.ts`,
+    body: ["export interface {{Component}}Props {", "", "};"],
+    selected: true,
+  },
+  {
+    name: `{{Component}}.utils.ts`,
+    body: [""],
+    selected: true,
+    optional: true,
+  },
+  {
+    name: `{{Component}}.constants.ts`,
+    body: [""],
+    selected: true,
+    optional: true,
+  },
+];
+
 async function getDirectoryUri(uri?: vscode.Uri) {
   if (!uri) {
     throw new Error("No directory selected");
@@ -86,6 +140,18 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
+      const stylingWay = await vscode.window.showQuickPick(
+        ["styled-components", "css module(scss)"],
+        {
+          title: "스타일링 방식을 선택해주세요. 🍕",
+        }
+      );
+
+      if (!stylingWay) {
+        vscode.window.showErrorMessage("스타일링 방식을 선택해야됩니다. 🥒");
+        return;
+      }
+
       // 컴포넌트명 입력받기
       const componentName = await vscode.window.showInputBox({
         title: "컴포넌트명을 입력하세요 🍕",
@@ -99,7 +165,7 @@ export function activate(context: vscode.ExtensionContext) {
       const qp = vscode.window.createQuickPick();
       qp.canSelectMany = true;
       qp.title = "🍕 추가로 필요한 파일을 선택해주세요. 🍕";
-      qp.items = files
+      qp.items = styledComponentsFiles
         .filter((file) => file.optional)
         .map((file) => {
           return {
@@ -111,7 +177,14 @@ export function activate(context: vscode.ExtensionContext) {
       qp.show();
 
       qp.onDidAccept(async () => {
-        const requiredFiles = files.filter((file) => !file.optional);
+        const selectedStylingWayFile =
+          stylingWay === "styled-components"
+            ? styledComponentsFiles
+            : cssModuleFiles;
+
+        const requiredFiles = selectedStylingWayFile.filter(
+          (file) => !file.optional
+        );
         for (let file of requiredFiles) {
           const fileName = file.name.replace(/{{Component}}/g, componentName);
           const fileUri = vscode.Uri.joinPath(uri, componentName, fileName);
@@ -126,7 +199,7 @@ export function activate(context: vscode.ExtensionContext) {
         const selectedItemLabel = qp.selectedItems.map((item) => item.label);
 
         for (let label of selectedItemLabel) {
-          const file: any = files.find(
+          const file: any = selectedStylingWayFile.find(
             (file) =>
               file.name === label.replace(componentName, "{{Component}}")
           );
