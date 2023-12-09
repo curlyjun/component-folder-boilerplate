@@ -69,6 +69,8 @@ const cssModuleFiles = [
       "import { {{Component}}Props } from './{{Component}}.types';",
       "import styles from './{{Component}}.module.scss';",
       "",
+      "const cx = classNames.bind(styles);",
+      "",
       "const {{Component}} = ({}: {{Component}}Props) => {",
       "  return <div className={cx('wrapper')}></div>;",
       "};",
@@ -92,7 +94,7 @@ const cssModuleFiles = [
   },
   {
     name: `{{Component}}.types.ts`,
-    body: ["export interface {{Component}}Props {", "", "};"],
+    body: ["export interface {{Component}}Props {}"],
     selected: true,
   },
   {
