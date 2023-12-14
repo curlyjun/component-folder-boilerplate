@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 const styledComponentsFiles = [
   {
     name: "index.ts",
-    body: ["export { default as {{Component}} } from './{{Component}}';"],
+    body: ["export { default as {{Component}} } from './{{Component}}';", ""],
     selected: true,
   },
   {
@@ -13,7 +13,7 @@ const styledComponentsFiles = [
       "import * as S from './{{Component}}.styled';",
       "import { {{Component}}Props } from './{{Component}}.types';",
       "",
-      "const {{Component}} = ({ children }: {{Component}}Props) => {",
+      "const {{Component}} = ({}: {{Component}}Props) => {",
       "  return <S.{{Component}}>{children}</S.{{Component}}>;",
       "};",
       "",
@@ -34,11 +34,7 @@ const styledComponentsFiles = [
   },
   {
     name: `{{Component}}.types.ts`,
-    body: [
-      "export interface {{Component}}Props {",
-      "  children: React.ReactNode;",
-      "};",
-    ],
+    body: ["export type {{Component}}Props = {};", ""],
     selected: true,
   },
   {
@@ -58,7 +54,7 @@ const styledComponentsFiles = [
 const cssModuleFiles = [
   {
     name: "index.ts",
-    body: ["export { default as {{Component}} } from './{{Component}}';"],
+    body: ["export { default as {{Component}} } from './{{Component}}';", ""],
     selected: true,
   },
   {
@@ -66,8 +62,8 @@ const cssModuleFiles = [
     body: [
       "import classNames from 'classnames/bind';",
       "",
-      "import { {{Component}}Props } from './{{Component}}.types';",
       "import styles from './{{Component}}.module.scss';",
+      "import { {{Component}}Props } from './{{Component}}.types';",
       "",
       "const cx = classNames.bind(styles);",
       "",
@@ -94,7 +90,7 @@ const cssModuleFiles = [
   },
   {
     name: `{{Component}}.types.ts`,
-    body: ["export interface {{Component}}Props {}"],
+    body: ["export type {{Component}}Props = {};"],
     selected: true,
   },
   {
